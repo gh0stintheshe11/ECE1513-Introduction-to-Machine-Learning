@@ -1,4 +1,4 @@
-## Unit 2: Probabilistic Modeling & Density Estimation
+# Unit 2: Probabilistic Modeling & Density Estimation
 
 ### 1. Why Probabilistic Modeling?
 

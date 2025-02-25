@@ -1,4 +1,4 @@
-## Unit 4: Linear Regression & Classification
+# Unit 4: Linear Regression & Classification
 
 ### 1. Transition to Supervised Learning
 

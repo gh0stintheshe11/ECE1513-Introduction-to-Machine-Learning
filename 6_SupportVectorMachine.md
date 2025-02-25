@@ -1,4 +1,4 @@
-## Unit 6: Support Vector Machine (SVM)
+# Unit 6: Support Vector Machine (SVM)
 
 ### 1. Connecting to Previous Lectures
 

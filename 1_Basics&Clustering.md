@@ -1,4 +1,4 @@
-## Unit 1: ML Preliminaries & Clustering
+# Unit 1: ML Preliminaries & Clustering
 
 ### 1. ML as a Data-Driven Approach
 

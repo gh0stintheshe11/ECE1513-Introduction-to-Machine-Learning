@@ -1,6 +1,8 @@
-# 1. Vectors and Their Operations
+# 0. Math
 
-## 1.1 Notation for Vectors
+## 1. Vectors and Their Operations
+
+### 1.1 Notation for Vectors
 
 - We often write a vector $\mathbf{x}$ as a column:
 
@@ -16,7 +18,7 @@ $$
 
 - A **row vector** is just the transpose: $\mathbf{x}^T = [x_1 \; x_2 \; \dots \; x_n]$.
 
-## 1.2 Adding Vectors
+### 1.2 Adding Vectors
 
 - If $\mathbf{u}$ and $\mathbf{v}$ are both $n$-dimensional, you add them **component by component**:
 
@@ -34,7 +36,7 @@ $$
 \mathbf{u} + \mathbf{v} = \begin{bmatrix} 2 + (-1) \\ 3 + 5 \end{bmatrix} = \begin{bmatrix} 1 \\ 8 \end{bmatrix}
 $$
 
-## 1.3 Scaling a Vector (Multiplying by a Number)
+### 1.3 Scaling a Vector (Multiplying by a Number)
 
 - If $c$ is a scalar (regular real number), then
 
@@ -106,14 +108,14 @@ $$
 
 ---
 
-# 2. Matrices: Multiplying, Adding, and Transposing
+## 2. Matrices: Multiplying, Adding, and Transposing
 
-## 2.1 Matrix Dimensions
+### 2.1 Matrix Dimensions
 
 - A matrix $A$ is often denoted as $m\times n$ if it has $m$ rows and $n$ columns.
   - **Example**: $A$ = $\begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix}$ is $2\times2$.
 
-## 2.2 Matrix Addition
+### 2.2 Matrix Addition
 
 - Add two matrices of the same size by **adding each corresponding entry**.
   - **Example**:
@@ -122,7 +124,7 @@ $$
 \begin{bmatrix} 1 & 3 \\ 2 & -1 \end{bmatrix} + \begin{bmatrix} 4 & 0 \\ -3 & 2 \end{bmatrix} = \begin{bmatrix} 1+4 & 3+0 \\ 2+(-3) & -1+2 \end{bmatrix} = \begin{bmatrix} 5 & 3 \\ -1 & 1 \end{bmatrix}
 $$
 
-## 2.3 Matrix-Vector Multiplication
+### 2.3 Matrix-Vector Multiplication
 
 - If $A$ is $m\times n$ and $\mathbf{x}$ is $n\times 1$, then $A\mathbf{x}$ is $m\times 1$.
   - **Component-wise**:
@@ -143,7 +145,7 @@ $$
 A\mathbf{x} = \begin{bmatrix} 2\cdot 3 + (-1)\cdot (-1) + 0\cdot 5 \\ 1\cdot 3 + 4\cdot(-1) + 2\cdot 5 \end{bmatrix} = \begin{bmatrix} 6 + 1 + 0 \\ 3 + (-4) + 10 \end{bmatrix} = \begin{bmatrix} 7 \\ 9 \end{bmatrix}
 $$
 
-## 2.4 Matrix-Matrix Multiplication
+### 2.4 Matrix-Matrix Multiplication
 
 - If $A$ is $m\times n$ and $B$ is $n\times p$, then the product $C = A B$ is an $m\times p$ matrix. The $(i,j)$-th entry is:
 
@@ -167,7 +169,7 @@ $$
 = \begin{bmatrix} 3 + 2 & 1 + 0 & 2 + 8 \\ 0 + (-1) & 0 + 0 & 0 + (-4) \end{bmatrix} = \begin{bmatrix} 5 & 1 & 10 \\ -1 & 0 & -4 \end{bmatrix}
 $$
 
-## 2.5 Transpose
+### 2.5 Transpose
 
 - The **transpose** of $A$ flips it across the diagonal, so $(A^T)_{ij} = A_{ji}$.
 - **Example**:
@@ -176,7 +178,7 @@ $$
 A = \begin{bmatrix} 1 & 4 & -2 \\ 3 & 0 & 1 \end{bmatrix}, \quad A^T = \begin{bmatrix} 1 & 3 \\ 4 & 0 \\ -2 & 1 \end{bmatrix}
 $$
 
-## 2.6 Identity and Inverse
+### 2.6 Identity and Inverse
 
 - **Identity matrix** $I$ is square, with 1s on diagonal, 0s elsewhere. 
   - For any compatible $\mathbf{x}$, $I \mathbf{x} = \mathbf{x}$.
@@ -184,9 +186,9 @@ $$
 
 ---
 
-# 3. Eigenvalues and Eigenvectors (Step-by-Step)
+## 3. Eigenvalues and Eigenvectors (Step-by-Step)
 
-## 3.1 The Basic Idea
+### 3.1 The Basic Idea
 
 - An **eigenvector** $\mathbf{v}$ of a square matrix $A$ is a nonzero vector so that:
 
@@ -196,7 +198,7 @@ $$
 
   where $\lambda$ is the **eigenvalue**.
 
-## 3.2 How To Find Them (In 2D or 3D, for example)
+### 3.2 How To Find Them (In 2D or 3D, for example)
 
 1. Write $\mathbf{v} = [v_1,\dots,v_n]^T$.
 2. **Eigenvalue equation**: $A\mathbf{v} - \lambda\mathbf{v} = \mathbf{0}$.
@@ -209,7 +211,7 @@ $$
 
 5. Solve that **determinant** equation to find possible $\lambda$. Then find $\mathbf{v}$ for each $\lambda$.
 
-## 3.3 Quick 2D Example
+### 3.3 Quick 2D Example
 
 - Let
 
@@ -245,9 +247,9 @@ $$
 
 ---
 
-# 4. Simple Derivatives With Vectors
+## 4. Simple Derivatives With Vectors
 
-## 4.1 Sum of Components
+### 4.1 Sum of Components
 
 - If you see $\sum_{i=1}^n x_i$, it's the same as "x1 + x2 + … + xn". For example,  
 
@@ -255,7 +257,7 @@ $$
 x_1 + x_2 + \dots + x_n
 $$
 
-## 4.2 Gradient Examples
+### 4.2 Gradient Examples
 
 - For a function $f(\mathbf{w}) = \|\mathbf{w}\|^2$ = $(w_1^2 + w_2^2 + \dots + w_d^2)$,
 
@@ -265,7 +267,7 @@ $$
   
 - For $(1/2)\|\mathbf{w}\|^2 = (1/2)(w_1^2 + \dots + w_d^2)$, the gradient would be $[w_1, w_2, \dots, w_d]^T$, etc.
 
-## 4.3 Linear Regression Example
+### 4.3 Linear Regression Example
 
 - Suppose the cost is 
 
@@ -279,7 +281,7 @@ $$
 
 ---
 
-# 5. Examples and "Panic-proof" Formulas
+## 5. Examples and "Panic-proof" Formulas
 
 1. **Sum of a list**: $x_1 + x_2 + \dots + x_n$  
 2. **Dot product** of vectors $\mathbf{u}$ and $\mathbf{v}$:
@@ -304,7 +306,7 @@ $$
 
 ---
 
-# 6. Putting It All Together
+## 6. Putting It All Together
 
 - **In K-Means**: you repeatedly compute distances $\|\mathbf{x}_n - \mathbf{\mu}_k\|^2$ for each point $\mathbf{x}_n$ and centroid $\mathbf{\mu}_k$. Then you average points to update centroids:  
 
@@ -334,9 +336,9 @@ $$
 
 ---
 
-# 7. Probability Theory
+## 7. Probability Theory
 
-## 1. Probability of Discrete Outcomes
+### 7.1 Probability of Discrete Outcomes
 
 1. **Discrete Random Variable**  
    - Example: a Bernoulli random variable $X$ can take the values 0 or 1.  
@@ -355,7 +357,7 @@ Where $k$ is the number of 1's and $N-k$ is the number of 0's.
 
    - Example: data = {1,1,0,1}, then the probability is $\theta^3 \times (1-\theta)^1$.
 
-## 2. Probability for Continuous Outcomes
+### 7.2 Probability for Continuous Outcomes
 
 1. **Continuous Random Variable**  
    - Example: a Gaussian/Normal random variable $X$ can take any real value.  
@@ -373,7 +375,7 @@ $$
      1. "$\sqrt{(2)(\pi)(\sigma^2)}$" is "$\sqrt{2}\times\sqrt{\pi}\times\sigma$."
      2. The exponent $(x-\mu)^2/(2\sigma^2)$ is just "( (x minus mu) times (x minus mu) ) / (2 times sigma^2)."
 
-## 3. Likelihoods and Log-Likelihoods (Maximum Likelihood Estimation)
+### 7.3 Likelihoods and Log-Likelihoods (Maximum Likelihood Estimation)
 
 1. **Likelihood** = Probability of Data, Treated as a Function of Unknown Parameters  
    - If data = {$x_1, x_2, \dots, x_N$}, each observation is from the same distribution **independently**.  
@@ -402,7 +404,7 @@ $$
    - Then you do log-likelihood = "$N \ln \lambda - \lambda$ times $(x_1 + x_2 + x_3 + \dots)$."  
    - Set derivative w.r.t. $\lambda$ = 0, solve for $\lambda$.
 
-## 4. Common Distributions (No Summation Notation)
+### 7.4 Common Distributions (No Summation Notation)
 
 1. **Bernoulli($\theta$)**:  
    - "$P(X=1) = \theta,\;P(X=0)=1-\theta$."
@@ -413,7 +415,7 @@ $$
 3. **Gaussian($\mu,\sigma^2$)**:  
    - "$p(x)= [1/( \sqrt{2\pi}\sigma)] \exp( - (x-\mu)^2/(2\sigma^2) )$."
 
-## 5. A Quick Example to Put It All Together
+### 7.5 A Quick Example to Put It All Together
 
 **Example**: Data = {1,2,3} from an Exponential distribution with unknown rate $\lambda$.
 
@@ -441,7 +443,7 @@ So MLE is $\lambda^* = 0.5$.
 
 ---
 
-# Wrapping Up
+## Wrapping Up
 
 - The "nasty" parts of probability math often revolve around **likelihoods** (especially with exponentials, logs, products). But you can always treat "$\prod_{n=1}^N$" as "(stuff1) times (stuff2) times … (stuffN)," and "$\sum_{n=1}^N$" as "stuff1 + stuff2 + … + stuffN." 
 - The main distributions used in the lectures (Bernoulli, Exponential, Gaussian) all revolve around these expansions. 

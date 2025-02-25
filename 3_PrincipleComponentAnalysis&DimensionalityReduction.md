@@ -1,4 +1,4 @@
-## Unit 3: Principle Component Analysis (PCA) & Dimensionality Reduction
+# Unit 3: Principle Component Analysis (PCA) & Dimensionality Reduction
 
 ### 1. Motivation & Key Concepts
 

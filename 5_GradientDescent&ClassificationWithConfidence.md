@@ -1,4 +1,4 @@
-## Unit 5: Gradient Descent & Classification with Confidence
+# Unit 5: Gradient Descent & Classification with Confidence
 
 ### 1. Maximum Likelihood Classification & Cross-Entropy
 
