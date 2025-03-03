@@ -1,117 +1,153 @@
-# Unit 4: Linear Regression & Classification
-
-### 1. Transition to Supervised Learning
-
-1. **Big Picture**  
-   - We completed **Unsupervised** methods: Clustering, Distribution Learning, PCA.  
-   - **Now** we shift to **Supervised Learning** (with **labeled** data \(\{(\mathbf{x}_n, v_n)\}\)).  
-   - Topics in **Lecture 4**:  
-     - Linear **Regression** (continuous labels)  
-     - Linear **Classification** (discrete labels), focusing on simple threshold-based or linear discriminant
-
-2. **General Supervised Recipe**  
-   - **Data**: \(\{(\mathbf{x}_n, v_n)\}_{n=1}^N\).  
-   - **Model**: \(f:\mathbf{x}\mapsto y\) belongs to a hypothesis set \(\mathcal{H}\) (e.g., linear or polynomial).  
-   - **Learning Algorithm**: Minimizes an **empirical risk** \(\hat{R}(f)\) measured by a **loss function** \(L(y,v)\).
+# **Unit 4: Linear Regression and Classification**
 
 ---
 
-### 2. Linear Regression
+## **1. General Idea**
+- **Problem We Are Solving**: 
+  - We need to **predict an output** based on given input data.
+  - Two types of problems:
+    - **Regression**: Predicting continuous values (e.g., predicting house prices).
+    - **Classification**: Predicting discrete labels (e.g., spam vs. non-spam emails).
 
-1. **Setup**  
-   - Suppose \(v_n\in\mathbb{R}\) is a **continuous** target (like price, height, temperature).  
-   - A **linear model**: 
-     \[
-       f(\mathbf{x})=\mathbf{w}^\top\mathbf{x} + b\quad\text{(or augment }\mathbf{x}\text{ with 1 to absorb }b\text{).}
-     \]
-
-2. **Polynomial Regression**  
-   - A generalization: let \(\phi(\mathbf{x})\) be polynomial features (or any feature mapping). Then 
-     \[
-       f(\mathbf{x})=\mathbf{w}^\top\phi(\mathbf{x}).
-     \]
-   - E.g. in 1D, we might use \(\phi(x)=[1, x, x^2, \dots, x^P]\) to fit a polynomial of degree \(P\).
-
-3. **Loss Function & Empirical Risk**  
-   - Commonly use **squared loss**: \(L(y,v)=\tfrac{1}{2}(y-v)^2\). (The \(\tfrac12\) factor is optional, can simplify derivatives.)  
-   - Empirical risk:
-     \[
-       \hat{R}(\mathbf{w})=\frac{1}{N}\sum_{n=1}^N \bigl[\mathbf{w}^\top\mathbf{x}_n + b - v_n\bigr]^2.
-     \]
-
-4. **Closed-Form Solution**  
-   - In matrix form, with \(\mathbf{X}\in\mathbb{R}^{d\times N}\) (columns are \(\mathbf{x}_n\)) and \(\mathbf{v}\in\mathbb{R}^N\):
-     \[
-       \hat{R}(\mathbf{w})=\frac{1}{N}\|\mathbf{X}^\top \mathbf{w} - \mathbf{v}\|^2.
-     \]
-   - Taking gradient \(\nabla_{\mathbf{w}}\hat{R}(\mathbf{w})=0\) leads to **normal equations**:
-     \[
-       \mathbf{X}\mathbf{X}^\top \mathbf{w} = \mathbf{X}\mathbf{v}.
-     \]
-   - **If** \(\mathbf{X}\mathbf{X}^\top\) is invertible (or we use the pseudo-inverse \(\mathbf{X}^+\)), we get:
-     \[
-       \mathbf{w}^*=\bigl(\mathbf{X}\mathbf{X}^\top\bigr)^{-1}\mathbf{X}\,\mathbf{v}.
-     \]
-
-5. **Convexity & Uniqueness**  
-   - Squared loss is **convex** in \(\mathbf{w}\) → the above solution is a **global minimum**.  
-   - If \(\mathbf{X}\mathbf{X}^\top\) is singular (rank-deficient), many solutions can exist or we need regularization.
-
-6. **Examples**  
-   - **Polynomial** fit on \(\{(x_n,v_n)\}\). The slides might show:  
-     - You can choose a polynomial degree \(P\), transform each \(x_n\) → \(\phi(x_n)\), solve linear regression in that expanded space.  
-   - **Interpretation**: Minimizing squared difference from data points.
+- **Models We Use**:
+  - **Linear Regression**: Predicts **continuous values** using a **linear function** of input variables.
+  - **Logistic Regression**: Predicts **binary classification** by applying a **sigmoid function** to linear regression.
+  - **Gradient Descent**: Optimization algorithm used to find the best parameters for both regression and classification.
 
 ---
 
-### 3. Linear Classification
-
-1. **Setup**  
-   - We want to predict a **discrete** label (e.g. 0 or 1, or \(\{-1,+1\}\)).  
-   - A **linear classifier**:  
-     \[
-       y=\mathrm{sign}\bigl(\mathbf{w}^\top \mathbf{x} + b\bigr)\quad \text{(binary classification)}.
-     \]
-
-2. **Threshold / Perceptron Approach**  
-   - **0–1 Loss**: \(\hat{R}(\mathbf{w})=\tfrac1N \sum_{n=1}^N \mathbf{1}\{y_n \neq v_n\}\).  
-   - Minimizing 0–1 loss is generally **hard** (non-differentiable, often NP-hard).  
-   - The **Perceptron Algorithm** is a classical iterative update that tries to find \(\mathbf{w}\) if data are linearly separable.
-
-3. **Regression Trick**  
-   - One naive approach is treat label \(\{-1,+1\}\) and do a “regression” fit \(\mathbf{w}^\top \mathbf{x}\approx v\).  
-   - But can be poor if outliers or if data not easily matched by a linear function with small squared error.
-
-4. **Logistic (Preview)**  
-   - We can define \(p=\sigma(\mathbf{w}^\top\mathbf{x}+b)\) to be the probability of class=1, with \(\sigma(\cdot)\) the sigmoid.  
-   - Minimizing **cross-entropy** then leads to a better classification. (Lecture 5 typically covers logistic regression in detail.)
+## **2. Important Definitions**
+| **Term**                 | **Definition** |
+|--------------------------|--------------|
+| **Linear Regression** | A model that fits a straight line to data to predict continuous values. |
+| **Hypothesis Function** | \( h(x) = w^T x + b \) (Linear function of input features). |
+| **Loss Function (MSE)** | Measures the difference between predicted and actual values: \( J(w, b) = \frac{1}{N} \sum_{i=1}^{N} (h(x_i) - v_i)^2 \). |
+| **Gradient Descent** | Optimization algorithm that updates parameters \( w, b \) iteratively to minimize the loss function. |
+| **Learning Rate (\(\alpha\))** | Controls step size in gradient descent updates. |
+| **Sigmoid Function** | Converts a linear regression output into a probability: \( \sigma(z) = \frac{1}{1 + e^{-z}} \). |
+| **Cross-Entropy Loss** | Loss function for classification: \( J(w) = -\frac{1}{N} \sum_{i=1}^{N} \left[ v_i \log(\sigma(w^T x_i)) + (1 - v_i) \log(1 - \sigma(w^T x_i)) \right] \). |
 
 ---
 
-### 4. Risk Minimization & Examples in the Slides
+## **3. Solution Process in Formulas**
+### **1. Linear Regression**
+#### **Step 1: Define Hypothesis**
+\[
+h(x) = w^T x + b
+\]
+where:
+- \( x \) is the feature vector.
+- \( w \) is the weight vector.
+- \( b \) is the bias term.
 
-1. **Risk = Expected Loss**  
-   - For regression: often use squared loss.  
-   - For classification: we might use 0–1 loss, or logistic/cross-entropy loss.  
-2. **Examples**  
-   - The lecture might show a numeric example: weight vs. pet type (cat/dog). A simple threshold or line in 1D or 2D.  
-   - Another example: polynomial curve fitting with regression on a small data set, demonstrating underfitting vs. overfitting.
+#### **Step 2: Define Mean Squared Error (MSE) Loss Function**
+\[
+J(w, b) = \frac{1}{N} \sum_{i=1}^{N} (h(x_i) - v_i)^2
+\]
+where:
+- \( N \) is the number of samples.
+- \( v_i \) is the actual target value.
 
-3. **Bias vs. Variance** (Possibly introduced)  
-   - Some slides mention that high-degree polynomials can overfit, while a linear function might underfit.  
-   - This sets the stage for **regularization** and **model complexity** topics in advanced lectures.
+#### **Step 3: Compute Gradients**
+\[
+\frac{\partial J}{\partial w} = \frac{2}{N} \sum_{i=1}^{N} (h(x_i) - v_i) x_i
+\]
+\[
+\frac{\partial J}{\partial b} = \frac{2}{N} \sum_{i=1}^{N} (h(x_i) - v_i)
+\]
 
-4. **Gradient-Based Methods**  
-   - Even though linear regression has a closed-form, we can also solve it via gradient descent.  
-   - For classification with logistic or 0–1 loss, we *must* use iterative methods (no closed-form).
+#### **Step 4: Update Parameters Using Gradient Descent**
+\[
+w = w - \alpha \frac{\partial J}{\partial w}
+\]
+\[
+b = b - \alpha \frac{\partial J}{\partial b}
+\]
+Repeat until convergence.
 
 ---
 
-### 5. Practical Takeaways
+### **2. Logistic Regression (Binary Classification)**
+#### **Step 1: Define Hypothesis (Apply Sigmoid)**
+\[
+P(v=1 | x; w) = \sigma(w^T x) = \frac{1}{1 + e^{-w^T x}}
+\]
 
-1. **Linear Models**: Quick, relatively simple approach for both regression and classification tasks.  
-2. **Closed-Form vs. Iterative**:  
-   - **Linear Regression**: normal equations if feasible; or gradient-based for large data.  
-   - **Classification**: no closed-form for 0–1 loss. We rely on perceptron or logistic regression.  
-3. **Hyperparameters**: polynomial degree \(P\), or how we handle the bias term, scaling, etc.  
-4. **Generalization**: check train vs. validation/test performance to detect over/underfitting.
+#### **Step 2: Define Cross-Entropy Loss Function**
+\[
+J(w) = -\frac{1}{N} \sum_{i=1}^{N} \left[ v_i \log(\sigma(w^T x_i)) + (1 - v_i) \log(1 - \sigma(w^T x_i)) \right]
+\]
+
+#### **Step 3: Compute Gradient**
+\[
+\frac{\partial J}{\partial w} = \frac{1}{N} \sum_{i=1}^{N} (\sigma(w^T x_i) - v_i) x_i
+\]
+
+#### **Step 4: Update Parameters Using Gradient Descent**
+\[
+w = w - \alpha \frac{\partial J}{\partial w}
+\]
+
+Repeat until convergence.
+
+---
+
+## **4. Sample Numerical Example**
+### **Example 1: Linear Regression**
+#### **Given Data:**
+| \( x \) | \( v \) (Actual) |
+|--------|--------------|
+| 1      | 2            |
+| 2      | 2.5          |
+| 3      | 3.5          |
+| 4      | 4.5          |
+
+#### **Step 1: Initialize Parameters**
+Let \( w = 0 \), \( b = 0 \), \( \alpha = 0.1 \).
+
+#### **Step 2: Compute Predictions**
+\[
+h(x) = w x + b
+\]
+
+#### **Step 3: Compute Loss (MSE)**
+\[
+J(w, b) = \frac{1}{4} [(w \cdot 1 + b - 2)^2 + (w \cdot 2 + b - 2.5)^2 + (w \cdot 3 + b - 3.5)^2 + (w \cdot 4 + b - 4.5)^2]
+\]
+
+#### **Step 4: Compute Gradients**
+Using the gradient formulas, update \( w \) and \( b \) iteratively.
+
+---
+
+### **Example 2: Logistic Regression**
+#### **Given Data:**
+| \( x_1 \) | \( x_2 \) | \( v \) (Class) |
+|--------|--------|--------------|
+| 0.5    | 1.0    | 1            |
+| 1.5    | 2.0    | 1            |
+| 2.5    | 3.0    | 0            |
+| 3.5    | 4.0    | 0            |
+
+#### **Step 1: Initialize Parameters**
+Let \( w = [0, 0] \), \( b = 0 \), \( \alpha = 0.1 \).
+
+#### **Step 2: Compute Predictions Using Sigmoid**
+\[
+P(v=1 | x) = \frac{1}{1 + e^{-(w^T x + b)}}
+\]
+
+#### **Step 3: Compute Cross-Entropy Loss**
+\[
+J(w) = -\frac{1}{4} \sum_{i=1}^{4} \left[ v_i \log(\sigma(w^T x_i)) + (1 - v_i) \log(1 - \sigma(w^T x_i)) \right]
+\]
+
+#### **Step 4: Compute Gradients**
+Using the gradient formulas, update \( w \) and \( b \) iteratively.
+
+---
+
+## **5. Others (Additional Important Details)**
+- **Why Use MSE for Regression?**: Squared loss penalizes large errors more, making it a good choice for continuous predictions.
+- **Why Use Cross-Entropy for Classification?**: It is better for probabilistic models like logistic regression because MSE leads to slow gradient updates.
+- **Feature Scaling (Normalization)**: Before applying gradient descent, features should be normalized to improve convergence speed.

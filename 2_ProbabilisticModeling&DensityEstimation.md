@@ -1,193 +1,166 @@
-# Unit 2: Probabilistic Modeling & Density Estimation
-
-### 1. Why Probabilistic Modeling?
-
-1. **Motivation: Outlier Detection & Beyond**  
-   - We often need to assess whether new observations are “normal” or “unusual.”  
-   - A principled way: **Estimate a probability distribution** for normal data, then check how likely new samples are under that distribution.  
-   - Goes beyond simple clustering—**density estimation** helps with anomaly detection, generative modeling, and more.
-
-2. **Unsupervised Setting**  
-   - Data are unlabeled: D = {x₁, x₂, …, xₙ}.  
-   - We hypothesize a **distribution** Pθ(x) with unknown parameter(s) θ.  
-   - Goal: Learn the **best** θ so that Pθ(x) fits the data well (i.e., assign high probability to points like xₙ in D).
+# **Unit 2: Probabilistic Modeling and Density Estimation**
 
 ---
 
-### 2. Probability Theory Basics
+## **1. General Idea**
+### **What problem are we solving?**
+- **Goal:** Estimate the **parameters of a probability distribution** from given data.  
+- **Key Idea:** We assume that our data is generated from an **unknown probability distribution** and want to **find the best parameter values** that fit this distribution.
+- **Approach:**  
+  - We use **Maximum Likelihood Estimation (MLE)** to find the parameters that maximize the probability of observing our dataset.  
+  - MLE is commonly used for **density estimation, classification models, and regression**.
 
-1. **Discrete Random Variables**  
-   - x takes values in a finite or countable set (e.g., {0,1} or {0,1,2,…}).  
-   - Probability mass function (PMF): P(x=aᵢ).  
-   - Must satisfy:  
+### **What models are used?**
+1. **Exponential Distribution**:  
+   - Used to model waiting times between events.
+   - Probability Density Function (PDF):  
      \[
-       \sum_i P(a_i) = 1,\quad 0 \leq P(a_i) \leq 1.
+     P(x; \lambda) = \lambda e^{-\lambda x}, \quad x \geq 0
      \]
-   - **Bernoulli(θ)**: x ∈ {0,1} with P(x=1)=θ and P(x=0)=1−θ.
-
-2. **Continuous Random Variables**  
-   - x ∈ ℝ or ℝ^d. Probability density function (PDF) P(x)≥0, and \(\int P(x)\,dx = 1.\)  
-   - **Gaussian**(μ,σ²):  
+   - We estimate **\( \lambda \)** using MLE.
+  
+2. **Bernoulli Distribution** (Binary Classification):  
+   - Used for data with **two possible outcomes** (0 or 1).
+   - Probability Mass Function (PMF):  
      \[
-       P(x)=\frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\Bigl(-\frac{(x-\mu)^2}{2\sigma^2}\Bigr).
+     P(v_n | x_n, w) = \sigma(w^T x_n)^{v_n} (1 - \sigma(w^T x_n))^{(1 - v_n)}
      \]
-   - **Exponential**(λ):  
+   - We estimate **\( w \)** (weights of the classifier) using MLE.
+
+3. **Gaussian Distribution**:  
+   - Used to model **continuous** data.
+   - Probability Density Function:  
      \[
-       P(x)=\lambda e^{-\lambda x},\; x\ge0.
+     P(x; \mu, \sigma) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
      \]
-
-3. **Independence & i.i.d.**  
-   - x₁,…,xₙ are **independent & identically distributed** if they come from the same distribution P(x) with no dependence on each other.
-
-4. **Expectation** (Mean)  
-   - Discrete: E[f(x)] = ∑ₓ f(x) P(x).  
-   - Continuous: E[f(x)] = ∫ f(x) P(x) dx.  
-   - For i.i.d. samples, sample mean approximates E[x].
+   - We estimate **\( \mu \) (mean) and \( \sigma^2 \) (variance)** using MLE.
 
 ---
 
-### 3. Maximum Likelihood Estimation (MLE)
+## **2. Definitions**
+These are the key terms and definitions you must know.
 
-**Core concept**: If we assume the data are i.i.d. from Pθ(x), how do we find θ?
-
-1. **Likelihood** L(θ)  
-   - For dataset D = {x₁, …, xₙ}:  
-     \[
-       L(\theta)=P_\theta(D)=\prod_{n=1}^N P_\theta(x_n).
-     \]
-   - Often easier to use **log-likelihood**:  
-     \[
-       \ln L(\theta)=\sum_{n=1}^N \ln P_\theta(x_n).
-     \]
-
-2. **Finding θ* by MLE**  
-   - \(\theta^* = \arg\max_\theta L(\theta)\) or equivalently \(\arg\max_\theta \ln L(\theta).\)  
-   - Take derivative w.r.t. θ, set to zero → solve.  
-   - **Examples**:  
-     - **Bernoulli(θ)**:  
-       \[
-         \ln L(\theta)=\sum_{n=1}^N [x_n \ln \theta + (1-x_n)\ln(1-\theta)],
-       \]
-       solution: \(\theta^*=\frac{\text{(Number of 1’s)}}{N}.\)  
-     - **Gaussian(μ,σ²)** (1D): \(\mu^*\) = sample mean, \(\sigma^{2*}\) = sample variance.  
-     - **Exponential(λ)**: \(\lambda^*=N/\sum_n x_n.\)
-
-3. **Interpretation**  
-   - MLE picks the θ that makes the observed data **most probable** under Pθ.
+| **Term**                | **Definition** |
+|------------------------|--------------|
+| **Likelihood Function \( L(\theta) \)** | The probability of the observed data given parameter \( \theta \):  \( L(\theta) = P(D | \theta) \). |
+| **Log-Likelihood Function \( \ell(\theta) \)** | The natural logarithm of the likelihood function: \( \ell(\theta) = \ln L(\theta) \). |
+| **Maximum Likelihood Estimation (MLE)** | The method to estimate parameters by maximizing the likelihood function. |
+| **Probability Density Function (PDF)** | A function that gives the probability of a continuous random variable falling within a range. |
+| **Probability Mass Function (PMF)** | A function that gives the probability of a discrete random variable taking a specific value. |
+| **Log Trick** | Since likelihoods involve products, taking the logarithm converts them into sums, making differentiation easier. |
 
 ---
 
-### 4. Connecting Clustering & Maximum Likelihood
+## **3. Solution Process**
+This section provides **clear, step-by-step** derivations for **MLE for different distributions**.
 
-1. **K-Means = Simple Gaussian Fitting**  
-   - If we assume each cluster is a **Gaussian** with mean μₖ and *fixed identity covariance*, then MLE for μₖ gives:  
-     \[
-       \mu_k = \text{mean of points in cluster }k.
-     \]
-   - **Assign each xₙ to whichever μₖ** has largest P( xₙ | that cluster ), which is the same as **smallest Euclidean distance**.  
-   - The iterative method: **K-Means** is effectively an **EM**-like approach for these means.
+### **Step 1: Maximum Likelihood for Exponential Distribution**
+#### **Problem:** Given data **\( D = \{ x_1, x_2, ..., x_N \} \)** drawn from an **Exponential Distribution**, estimate \( \lambda \).
 
-2. **Soft K-Means** & **GMM**  
-   - Instead of hard assignment, each point belongs fractionally to clusters.  
-   - More general is **Gaussian Mixture Model (GMM)**:  
-     \[
-       P(x)=\sum_{k=1}^K \pi_k\, \mathcal{N}(x|\mu_k,\Sigma_k),
-     \]  
-     with mixing weights πₖ, means μₖ, and covariance matrices Σₖ.  
-   - MLE for GMM is done via the **Expectation-Maximization (EM)** algorithm.  
-   - **Soft K-Means** is just a special case with Σ fixed = identity and πₖ=1/K.
-
----
-
-### 5. Model Checking & Validation
-
-1. **Overfitting**  
-   - If the model is too flexible (e.g. too many parameters or mixture components), it might “memorize” data but fail to generalize.
-
-2. **Data Splitting**  
-   - **Train**: Fit parameters (e.g. θ or the centroids).  
-   - **Validation**: Check performance, tune hyperparameters (like number of clusters K).  
-   - **Test**: Final check to see how well the model generalizes.
-
-3. **Likelihood on Test Set**  
-   - For density estimation, we can measure log-likelihood on the test set T. If it’s much lower than on training data, we might be overfitting.
-
-4. **Outlier Detection**  
-   - If Pθ(x_new) is very low, we can label x_new as an “outlier.”  
-   - Similarly, large negative log-likelihood indicates unusual data point.
-
----
-
-### 6. Step-by-Step Examples
-
-1. **Exponential Distribution**  
-   - Example from Lecture: D={1,2,3}.  
-   - L(λ)=λ^N exp(−λ∑ₙ xₙ).  
-   - lnL(λ)=N lnλ − λ∑ₙ xₙ.  
-   - Solve derivative=0 → λ^*=N/∑ₙ xₙ = 3/(1+2+3)=0.5.
-
-2. **Connection to K-Means**  
-   - Suppose each cluster has identity covariance Σ=I. The negative log-likelihood of xₙ under cluster k is proportional to ‖xₙ−μₖ‖². Minimizing total negative log-likelihood = Minimizing sum of squared distances → The K-Means objective function.
-
-3. **Gaussian**(μ,σ²) MLE**  
-   - For 1D data:  
-     - μ^* = average of xₙ.  
-     - σ^{2*} = average of (xₙ−μ^*)².
-
----
-
-### 7. Key Takeaways / “No Detail Too Small”
-
-1. **Data→Distribution**: We treat each sample xₙ as a random draw from Pθ(x).  
-2. **i.i.d.**: Usually crucial for ML to handle them as independent draws.  
-3. **Max Likelihood**: Standard tool for parameter estimation (θ^* solves arg max Pθ(D)).  
-4. **Log-likelihood** is used for convenience (sums vs. products).  
-5. **MLE for Common Distributions**:  
-   - Bernoulli(θ): fraction of 1’s.  
-   - Gaussian(μ,σ²): sample mean & variance.  
-   - Exponential(λ): inverse of sample mean.  
-6. **Link to Clustering**:  
-   - K-Means can be seen as MLE for means of K Gaussians with fixed identity covariance.  
-   - Soft K-Means → partial membership → a simpler version of GMM.  
-7. **Testing & Validation**:  
-   - Data splitting helps avoid overfitting.  
-   - Evaluate log-likelihood or related metrics (like distortion in K-Means) on validation/test sets.
-
----
-
-### 8. Frequently Confused Points
-
-1. **MLE vs. MAP**: The Lecture focuses on **MLE** (maximum likelihood). A more advanced approach is **MAP** (maximum a posteriori) which would incorporate priors. Not covered deeply here, but keep in mind for advanced classes.  
-2. **Covariance in K-Means**: K-Means effectively sets Σ=I; real data might need full Σ → that’s GMM.  
-3. **Outlier vs. Low Probability**: “Unusual” means Pθ(x_new) is **small**. Perfect for outlier detection but you must ensure your distribution is well-fitted.
-
----
-
-## Quick-Reference Formulae
-
-1. **Log-Likelihood** for i.i.d. data:  
+1. **Write the likelihood function**  
    \[
-     \ln L(\theta) = \sum_{n=1}^N \ln P_\theta(x_n).
+   L(\lambda) = \prod_{n=1}^{N} P(x_n | \lambda)
+   \]
+   Substituting the exponential PDF:
+   \[
+   L(\lambda) = \prod_{n=1}^{N} \lambda e^{-\lambda x_n}
+   \]
+   \[
+   = \lambda^N e^{-\lambda \sum x_n}
    \]
 
-2. **Bernoulli(θ)**:  
+2. **Take the log-likelihood**  
+   Using the **log trick**:
    \[
-     \theta^* = \frac{\#\text{(ones)}}{N}.
+   \ell(\lambda) = \ln L(\lambda) = N \ln \lambda - \lambda \sum x_n
    \]
 
-3. **Exponential(λ)**:  
+3. **Differentiate and set to zero**  
    \[
-     \lambda^* = \frac{N}{\sum_n x_n}.
+   \frac{d}{d\lambda} \ell(\lambda) = \frac{N}{\lambda} - \sum x_n = 0
    \]
 
-4. **Gaussian(μ, σ²)** (1D):  
+4. **Solve for \( \lambda \)**
    \[
-     \mu^* = \frac1N \sum_{n=1}^N x_n,\quad
-     \sigma^{2*} = \frac1N \sum_{n=1}^N (x_n-\mu^*)^2.
+   \lambda^* = \frac{N}{\sum x_n}
    \]
 
-5. **K-Means Distortion**:  
+---
+
+### **Step 2: Maximum Likelihood for Bernoulli Distribution (Binary Classification)**
+#### **Problem:** Given binary labels **\( v_n \in \{0,1\} \)**, estimate \( \theta \) (probability of success).
+
+1. **Write the likelihood function**  
    \[
-     J = \frac1N \sum_{n=1}^N \sum_{k=1}^K r_{n,k}\|x_n - \mu_k\|^2,
+   L(\theta) = \prod_{n=1}^{N} \theta^{v_n} (1 - \theta)^{(1 - v_n)}
    \]
-   with rₙ,ₖ=1 if point xₙ assigned to cluster k, else 0.
+
+2. **Take the log-likelihood**  
+   \[
+   \ell(\theta) = \sum_{n=1}^{N} v_n \ln \theta + (1 - v_n) \ln (1 - \theta)
+   \]
+
+3. **Differentiate and set to zero**  
+   \[
+   \frac{d}{d\theta} \ell(\theta) = \frac{\sum v_n}{\theta} - \frac{N - \sum v_n}{1 - \theta} = 0
+   \]
+
+4. **Solve for \( \theta \)**
+   \[
+   \theta^* = \frac{\sum v_n}{N}
+   \]
+
+---
+
+### **Step 3: Maximum Likelihood for Gaussian Distribution**
+#### **Problem:** Given data \( D = \{x_1, x_2, ..., x_N\} \), estimate \( \mu \) and \( \sigma^2 \).
+
+1. **Write the likelihood function**  
+   \[
+   L(\mu, \sigma^2) = \prod_{n=1}^{N} \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_n - \mu)^2}{2\sigma^2}}
+   \]
+
+2. **Take the log-likelihood**  
+   \[
+   \ell(\mu, \sigma^2) = -\frac{N}{2} \ln (2\pi \sigma^2) - \frac{1}{2\sigma^2} \sum (x_n - \mu)^2
+   \]
+
+3. **Differentiate w.r.t \( \mu \) and \( \sigma^2 \), then solve for parameters**  
+   \[
+   \mu^* = \frac{1}{N} \sum x_n, \quad \sigma^{2*} = \frac{1}{N} \sum (x_n - \mu^*)^2
+   \]
+
+---
+
+## **4. Sample Numerical Example**
+**Given dataset:** \( D = \{1, 2, 3\} \), assuming an **Exponential Distribution**.
+
+1. **Write the likelihood function:**  
+   \[
+   L(\lambda) = \lambda^3 e^{- \lambda (1+2+3)}
+   \]
+
+2. **Take the log-likelihood:**  
+   \[
+   \ell(\lambda) = 3 \ln \lambda - 6\lambda
+   \]
+
+3. **Differentiate and solve:**  
+   \[
+   \frac{3}{\lambda} - 6 = 0 \Rightarrow \lambda^* = \frac{3}{6} = 0.5
+   \]
+
+✔ **Correct MLE estimate: \( \lambda^* = 0.5 \).**
+
+---
+
+## **5. Other Important Details**
+- **MLE Assumptions**  
+  - The data samples are **independent and identically distributed (i.i.d.)**.
+  - The model follows a known **probability distribution**.
+
+- **Log Trick**  
+  - Using logarithms simplifies likelihood calculations by **converting products into sums**.
+
+- **Connection Between MLE and Cross-Entropy**  
+  - In **classification**, MLE is equivalent to **minimizing Cross-Entropy Loss**.

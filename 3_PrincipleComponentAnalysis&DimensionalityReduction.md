@@ -1,125 +1,191 @@
-# Unit 3: Principle Component Analysis (PCA) & Dimensionality Reduction
-
-### 1. Motivation & Key Concepts
-
-1. **Dimensionality Reduction**  
-   - High-dimensional data (potentially thousands of features) can be *difficult* to visualize or model.  
-   - **Goal**: Represent or compress data into fewer dimensions (say, \(K < D\)) while preserving as much “signal” as possible.  
-   - **Applications**: Data compression, visualization, noise reduction, and feature extraction.
-
-2. **Why PCA?**  
-   - PCA is a **linear** approach to dimensionality reduction.  
-   - It projects data from \(D\) dimensions down to \(K\) dimensions in a way that (1) **maximizes the variance** of the projected data or (2) **minimizes reconstruction error**.
-
-3. **Example Motivations**  
-   - **Image Compression**: Each image is a high-dimensional vector (e.g., \(300\times200 = 60000\) pixels). We want to store it with fewer numbers.  
-   - **Recommendation Systems**: Large user–item rating matrices often lie on a lower-dimensional “latent” space of preferences.
+# **Unit 3: Principal Component Analysis (PCA)**
 
 ---
 
-### 2. Data Representation & Linear Algebra Review
+## **1. General Idea**
+### **What problem are we solving?**
+- **Goal:** Reduce the dimensionality of data while preserving as much information (variance) as possible.
+- **Key Idea:** We transform the dataset into a new coordinate system where the most significant features (Principal Components) capture the majority of the variance.
+- **Approach:**  
+  - We compute the **covariance matrix** of the data.
+  - We find its **eigenvalues and eigenvectors**.
+  - We project the data onto the **top $K$ eigenvectors** that explain the most variance.
 
-1. **Representing Data**  
-   - Dataset \(D = \{\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_N\}\), each \(\mathbf{x}_n \in \mathbb{R}^D\).  
-   - We want a projection \(\mathbf{z}_n \in \mathbb{R}^K\), with \(K < D\).
-
-2. **Orthonormal Bases**  
-   - A set of vectors \(\{\mathbf{u}_1, \dots, \mathbf{u}_K\}\) in \(\mathbb{R}^D\) is orthonormal if \(\mathbf{u}_i^\top \mathbf{u}_j = 0\) (for \(i\neq j\)) and \(\|\mathbf{u}_i\|=1\).  
-   - We often collect them into a matrix \(\mathbf{U}\in\mathbb{R}^{D\times K}\) with \(\mathbf{U}^\top \mathbf{U} = \mathbf{I}_K\).
-
-3. **Eigenvalues & Covariance**  
-   - For a symmetric matrix \(\mathbf{A}\in\mathbb{R}^{D\times D}\), an eigenvector \(\mathbf{v}\) satisfies \(\mathbf{A}\,\mathbf{v} = \lambda \mathbf{v}\).  
-   - **Sample Covariance** \(\mathbf{\Sigma}\) is computed from mean-centered data:  
-     \[
-       \mathbf{\Sigma} = \tfrac{1}{N}\sum_{n=1}^N (\mathbf{x}_n - \mathbf{\mu})\,(\mathbf{x}_n - \mathbf{\mu})^\top,
-     \]
-     where \(\mathbf{\mu}=\tfrac{1}{N}\sum_{n=1}^N \mathbf{x}_n\).
-
----
-
-### 3. Principle Component Analysis (PCA)
-
-1. **Problem Formulation**  
-   - We look for \(K\) directions (principal components) \(\{\mathbf{u}_1, \dots, \mathbf{u}_K\}\) onto which data will be projected.  
-   - For each point \(\mathbf{x}_n\), the low-dimensional representation is  
-     \[
-       \mathbf{z}_n = \begin{bmatrix}
-         \mathbf{u}_1^\top(\mathbf{x}_n - \mathbf{\mu}) \\
-         \vdots \\
-         \mathbf{u}_K^\top(\mathbf{x}_n - \mathbf{\mu})
-       \end{bmatrix}.
-     \]
-   - We can optionally reconstruct:  
-     \[
-       \hat{\mathbf{x}}_n = \mathbf{\mu} + \sum_{k=1}^K z_{n,k}\,\mathbf{u}_k.
-     \]
-
-2. **Minimizing Reconstruction Error**  
-   - The average reconstruction error is  
-     \[
-       \tfrac{1}{N}\sum_{n=1}^N \|\hat{\mathbf{x}}_n - \mathbf{x}_n\|^2.
-     \]
-   - PCA chooses \(\{\mathbf{u}_1, \dots, \mathbf{u}_K\}\) to minimize this error.
-
-3. **Maximizing Variance View**  
-   - Equivalently, PCA picks the subspace spanned by the top-\(K\) eigenvectors of \(\mathbf{\Sigma}\) (the largest \(K\) eigenvalues).  
-   - The first principal component \(\mathbf{u}_1\) is the eigenvector of \(\mathbf{\Sigma}\) with the largest eigenvalue \(\lambda_1\).  
-   - Next principal components \(\mathbf{u}_2, \dots, \mathbf{u}_K\) are eigenvectors for \(\lambda_2, \dots, \lambda_K\), each orthogonal to the previous ones.
-
-4. **Algorithm Steps (High-Level)**  
-   - **(a)** Compute mean \(\mathbf{\mu} = \tfrac{1}{N}\sum_{n=1}^N \mathbf{x}_n\).  
-   - **(b)** Form the sample covariance \(\mathbf{\Sigma}\).  
-   - **(c)** Find the top \(K\) eigenvectors (largest eigenvalues) of \(\mathbf{\Sigma}\).  
-   - **(d)** Construct projection matrix \(\mathbf{U} = [\,\mathbf{u}_1, \dots, \mathbf{u}_K\,]\).  
-   - **(e)** For each \(\mathbf{x}_n\), compute \(\mathbf{z}_n = \mathbf{U}^\top(\mathbf{x}_n - \mathbf{\mu})\).  
-   - **(f)** Optional reconstruction: \(\hat{\mathbf{x}}_n = \mathbf{U}\,\mathbf{z}_n + \mathbf{\mu}\).
+### **What models are used?**
+1. **Principal Component Analysis (PCA)**:  
+   - A **linear transformation** that finds the **directions of maximum variance** in high-dimensional data.
+   - Each **Principal Component (PC)** is an **eigenvector** of the **covariance matrix**.
+  
+2. **Covariance Matrix**:  
+   - Measures how different features **vary together**.
+   - Used to compute eigenvalues and eigenvectors for PCA.
 
 ---
 
-### 4. Simple Examples & Applications
+## **2. Definitions**
+These are the key terms and definitions you must know.
 
-1. **Line Example in 2D**  
-   - If \(\{\mathbf{x}_n\}\) all lie on a single line, then you only need 1 principal component to represent them with zero error. The smaller eigenvalue will be \(0\).
-
-2. **Image Compression**  
-   - Each image \(\mathbf{x}_n\) is a large vector in \(\mathbb{R}^D\).  
-   - PCA finds a rank-\(K\) approximation, letting you store the top PCA basis (“eigen-images”) plus coordinates \(\mathbf{z}_n\).  
-   - Reconstruction quality improves with \(K\) but so does storage size.
-
-3. **Matrix Completion**  
-   - A large user–item rating matrix can be treated like data in \(\mathbb{R}^D\).  
-   - PCA (or SVD) captures it in a lower-dimensional latent space if it’s approximately low rank.
-
----
-
-### 5. Practical Considerations
-
-1. **Data Preprocessing**  
-   - Always **center** data by subtracting \(\mathbf{\mu}\).  
-   - Optionally, **scale** each dimension (normalization) so no dimension unfairly dominates variance.
-
-2. **Cost & Complexity**  
-   - Naively, eigen-decomposition of a \(D\times D\) covariance is \(O(D^3)\). This is feasible for moderate \(D\).  
-   - For very large \(D\), use incremental or randomized PCA.
-
-3. **PCA is Linear**  
-   - If data lie on a non-linear manifold, PCA may not capture it well.  
-   - Solutions: **Kernel PCA**, **Autoencoders**, or other nonlinear approaches.
-
-4. **Eigenvalue “Elbow”**  
-   - Plot eigenvalues \(\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_D\).  
-   - Choose \(K\) where the curve “flattens out,” balancing dimension reduction vs. info loss.
-
-5. **Sensitivity to Outliers**  
-   - Large outliers can skew the principal components significantly. Possibly use **robust PCA** methods if outliers are frequent.
+| **Term**                | **Definition** |
+|------------------------|--------------|
+| **Dimensionality Reduction** | The process of reducing the number of features while keeping important information. |
+| **Principal Component Analysis (PCA)** | A transformation that projects data onto directions (eigenvectors) that maximize variance. |
+| **Covariance Matrix $\Sigma$** | A matrix that shows the relationships between different variables: $\Sigma = \frac{1}{N} X^T X$. |
+| **Eigenvalues $\lambda$** | Scalars that measure the variance captured by each eigenvector. |
+| **Eigenvectors $v$** | Directions along which data has the most variance. |
+| **Projection Matrix $U$** | The matrix containing the **top $K$ eigenvectors**, used for reducing dimensions. |
+| **Reconstruction Error** | The difference between the original data and its projection. |
+| **Latent Representation** | The new low-dimensional representation of the data after applying PCA. |
 
 ---
 
-### 6. Study Tips & Recap
+## **3. Solution Process**
+This section provides **clear, step-by-step** derivations for **PCA algorithm and reconstruction**.
 
-- **Understand** the two main derivations of PCA:  
-  1. **Minimize** reconstruction error  
-  2. **Maximize** variance of projected data  
-- **Practice** computing covariance for small examples (2D or 3D) and doing manual eigen-decomposition.  
-- **Remember** the final step: PCA is just \(\mathbf{U}^\top(\mathbf{x}-\mathbf{\mu})\) for the top eigenvectors \(\mathbf{u}_k\).  
-- **Hyperparameter** \(K\) must be chosen, often by looking at how much variance we keep.
+### **Step 1: Compute the Covariance Matrix**
+1. **Center the dataset** (subtract the mean):
+   $$
+   \bar{x} = \frac{1}{N} \sum x_n, \quad X' = X - \bar{x}
+   $$
+2. **Compute the covariance matrix**:
+   $$
+   \Sigma = \frac{1}{N} X'^T X'
+   $$
+
+---
+
+### **Step 2: Compute Eigenvalues and Eigenvectors**
+- Solve for the **eigenvalues** $\lambda$ and **eigenvectors** $v$ of the covariance matrix:
+  $$
+  \Sigma v = \lambda v
+  $$
+- The eigenvectors **define new axes** for the transformed data.
+
+---
+
+### **Step 3: Select the Top $K$ Eigenvectors**
+- **Sort eigenvalues in descending order**:  
+  - The **largest eigenvalues correspond to the most significant principal components**.
+- **Choose the top $K$ eigenvectors** to form the projection matrix:
+  $$
+  U = [v_1, v_2, ..., v_K]
+  $$
+
+---
+
+### **Step 4: Project Data onto New Basis**
+- Compute the **new low-dimensional representation**:
+  $$
+  Z = U^T X'
+  $$
+- The dataset is now represented in a **lower-dimensional space**.
+
+---
+
+### **Step 5: Reconstruct Data from PCA**
+- If we want to **recover an approximation** of the original data:
+  $$
+  \hat{X} = U Z + \bar{x}
+  $$
+- The difference between $X$ and $\hat{X}$ is the **reconstruction error**.
+
+---
+
+## **4. Sample Numerical Example**
+### **Problem Statement:**
+We have the dataset:
+$$
+D = \{ (1, 2), (2, 4), (3, 6), (4, 8) \}
+$$
+We want to apply **PCA** to reduce it to **1 dimension**.
+
+### **Step 1: Compute Mean and Center the Data**
+$$
+\bar{x} = \frac{1+2+3+4}{4} = 2.5, \quad \bar{y} = \frac{2+4+6+8}{4} = 5
+$$
+
+$$
+X' = \begin{bmatrix}
+-1.5 & -3 \\
+-0.5 & -1 \\
+0.5 & 1 \\
+1.5 & 3
+\end{bmatrix}
+$$
+
+---
+
+### **Step 2: Compute Covariance Matrix**
+$$
+\Sigma = \frac{1}{4} X'^T X'
+$$
+
+$$
+= \frac{1}{4} \begin{bmatrix}
+(-1.5)^2 + (-0.5)^2 + (0.5)^2 + (1.5)^2 & (-1.5)(-3) + (-0.5)(-1) + (0.5)(1) + (1.5)(3) \\
+(-3)(-1.5) + (-1)(-0.5) + (1)(0.5) + (3)(1.5) & (-3)^2 + (-1)^2 + (1)^2 + (3)^2
+\end{bmatrix}
+$$
+
+$$
+= \frac{1}{4} \begin{bmatrix} 
+2.5 & 5 \\ 
+5 & 10 
+\end{bmatrix}
+$$
+
+$$
+= \begin{bmatrix} 
+0.625 & 1.25 \\ 
+1.25 & 2.5 
+\end{bmatrix}
+$$
+
+---
+
+### **Step 3: Compute Eigenvalues and Eigenvectors**
+- **Solve $\text{det}(\Sigma - \lambda I) = 0$**:
+  $$
+  \begin{vmatrix} 0.625 - \lambda & 1.25 \\ 1.25 & 2.5 - \lambda \end{vmatrix} = 0
+  $$
+
+- **Eigenvalues**: $\lambda_1 = 3.125, \lambda_2 = 0$
+- **Eigenvectors**: $v_1 = [0.4, 0.8]^T$, $v_2 = [-0.8, 0.4]^T$
+
+---
+
+### **Step 4: Project Data onto 1D**
+Using **top eigenvector $v_1 = [0.4, 0.8]^T$**:
+$$
+z_n = v_1^T X'
+$$
+
+$$
+Z = \begin{bmatrix} 
+-1.5 & -3 \\ 
+-0.5 & -1 \\ 
+0.5 & 1 \\ 
+1.5 & 3 
+\end{bmatrix}
+\begin{bmatrix} 
+0.4 \\ 
+0.8 
+\end{bmatrix}
+$$
+
+$$
+= \begin{bmatrix} 
+-3.6 \\ 
+-1.2 \\ 
+1.2 \\ 
+3.6 
+\end{bmatrix}
+$$
+
+✔ **Dataset is now 1D: $Z = [-3.6, -1.2, 1.2, 3.6]$**.
+
+---
+
+## **5. Other Important Details**
+- **PCA is sensitive to scaling**: Always **normalize features** before applying PCA.
+- **PCA is linear**: It only works if data follows **linear patterns**; for non-linear data, use **Kernel PCA** or **Autoencoders**.
+- **Eigenvalues represent variance**: **Larger eigenvalues capture more variance**.

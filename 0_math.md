@@ -440,12 +440,3 @@ $$
    - Solve: "$(3 / \lambda) = 6 \Rightarrow \lambda = (3/6) = 0.5$."
 
 So MLE is $\lambda^* = 0.5$.
-
----
-
-## Wrapping Up
-
-- The "nasty" parts of probability math often revolve around **likelihoods** (especially with exponentials, logs, products). But you can always treat "$\prod_{n=1}^N$" as "(stuff1) times (stuff2) times … (stuffN)," and "$\sum_{n=1}^N$" as "stuff1 + stuff2 + … + stuffN." 
-- The main distributions used in the lectures (Bernoulli, Exponential, Gaussian) all revolve around these expansions. 
-- **Stay calm**: Expand step by step. For instance, if you see $\prod_{n=1}^N P_\theta(x_n)$, literally rewrite it as "$P_\theta(x_1) \times P_\theta(x_2) \times \dots P_\theta(x_N)$" so you see each factor. Then take a **log** to turn it into additions.  
-- For MLE: you typically do "**(1) Write log-likelihood** => **(2) expand** => **(3) derivative w.r.t. parameter** => **(4) set = 0** => solve."
